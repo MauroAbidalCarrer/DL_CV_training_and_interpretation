@@ -17,22 +17,22 @@ class Trainer:
     model:Module
     optimizer:SGD
     epoch: int = field(default=0, init=False)
-    step_count: int = field(default=0, init=False)
+    step: int = field(default=0, init=False)
     loss:CrossEntropyLoss = field(default_factory=CrossEntropyLoss)
     training_metrics:list[dict] = field(default_factory=list, init=False)
 
-    def optimize_nn(self, epochs, train_dl:DL, test_dl:DL, catch_key_int=True, plt_kwargs: dict=None) -> DF:
+    def optimize_nn(self, epochs, train_dl:DL, test_dl:DL, *, catch_key_int=True, plt_kwargs: dict=None) -> DF:
         """Optimizes the neural network and returns a dataframe of the training metrics."""
         if catch_key_int:
             try:
-                self.training_loop(epochs, train_dl, test_dl, plt_kwargs)
+                self._training_loop(epochs, train_dl, test_dl, plt_kwargs)
             except KeyboardInterrupt:
                 print("Caught KeyboardInterrupt exception, returning training metrics.")
         else:
-            self.training_loop(epochs, train_dl, test_dl, plt_kwargs)
+            self._training_loop(epochs, train_dl, test_dl, plt_kwargs)
         return DF.from_records(self.training_metrics)
 
-    def training_loop(self, epochs, train_dl:DL, test_dl:DL, plt_kwargs=None):
+    def _training_loop(self, epochs, train_dl:DL, test_dl:DL, plt_kwargs=None):
         fig = None
         model_device = next(self.model.parameters()).device
         # Use epoch instead of epoch.
@@ -50,17 +50,18 @@ class Trainer:
                 loss_val = self.loss(outputs, batch_y)
                 loss_val.backward()
                 self.optimizer.step()
+                self.step += 1
             self.epoch += 1
 
     def record_metrics(self, train_dl:DL, test_dl:DL) -> dict[str, any]:
         with torch.no_grad():
             return {
                 "epoch": self.epoch,
-                "step": self.step_count,
+                "step": self.step,
                 "date": datetime.now(),
                 **self.metrics_of_dataset(test_dl, "test"),
                 **self.metrics_of_dataset(train_dl, "train"),
-                # **self.optimizer.state_dict()["param_groups"],
+                **self.optimizer.state_dict()["param_groups"][-1],
             }
 
     def metrics_of_dataset(self, data_loader:DL, dl_prefix:str) -> dict:
@@ -76,7 +77,7 @@ class Trainer:
             dl_prefix + "_loss": mean(losses),
             dl_prefix + "_accuracy":mean(accuracies)
         }
-    
+
     def create_figure_widget(self, plt_kwargs:dict) -> FigureWidget:
         df = (
             DF.from_records(self.training_metrics)
@@ -84,13 +85,12 @@ class Trainer:
         )
         fig = (
             line(
-                df,
-                plt_kwargs["x"],
-                "value",
+                data_frame=df,
+                y="value",
                 facet_row="variable",
                 color="variable",
                 markers=True,
-                **plt_kwargs
+                **{k: v for k, v in plt_kwargs.items() if k != "y"},
             )
             .update_yaxes(matches=None)
         )
