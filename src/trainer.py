@@ -3,8 +3,7 @@ from IPython.display import display
 from dataclasses import dataclass, field
 
 import torch
-from numpy import mean
-from torch.optim import SGD
+from torch.optim import Adam
 from plotly.express import line
 from pandas import DataFrame as DF
 from torch.nn import Module, CrossEntropyLoss
@@ -15,7 +14,7 @@ from torch.utils.data import DataLoader as DL
 @dataclass
 class Trainer:
     model:Module
-    optimizer:SGD
+    optimizer:Adam
     epoch: int = field(default=0, init=False)
     step: int = field(default=0, init=False)
     loss:CrossEntropyLoss = field(default_factory=CrossEntropyLoss)
@@ -65,21 +64,22 @@ class Trainer:
             }
 
     def metrics_of_dataset(self, data_loader: DL, dl_prefix: str) -> dict:
-        model_device = next(self.model.parameters()).device
-        total_loss = 0
-        total_accuracy = 0
-        for batch_x, batch_y in data_loader:
-            batch_x = batch_x.to(model_device)
-            batch_y = batch_y.to(model_device)
-            batch_y_pred = self.model(batch_x)
-            total_loss += self.loss(batch_y_pred, batch_y).item()
-            total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
-        return {
-            # Divide loss by nb batches
-            dl_prefix + "_loss": total_loss / len(data_loader),
-            # Divide accuracy by nb elements
-            dl_prefix + "_accuracy": total_accuracy / len(data_loader.dataset),
-        }
+        with torch.no_grad():
+            model_device = next(self.model.parameters()).device
+            total_loss = 0
+            total_accuracy = 0
+            for batch_x, batch_y in data_loader:
+                batch_x = batch_x.to(model_device)
+                batch_y = batch_y.to(model_device)
+                batch_y_pred = self.model(batch_x)
+                total_loss += self.loss(batch_y_pred, batch_y).item()
+                total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
+            return {
+                # Divide loss by nb batches
+                dl_prefix + "_loss": total_loss / len(data_loader),
+                # Divide accuracy by nb elements
+                dl_prefix + "_accuracy": total_accuracy / len(data_loader.dataset),
+            }
 
     def create_figure_widget(self, plt_kwargs: dict) -> FigureWidget:
         df = (
