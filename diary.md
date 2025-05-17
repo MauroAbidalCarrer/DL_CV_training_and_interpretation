@@ -6,3 +6,9 @@
     I am going to use the code I wrote in my [cnn_from_scratch](https://github.com/MauroAbidalCarrer/CNN_from_scratch) to put all the boiler plate code in seperate modules.  
     This way I can also get the live view of the charts of the metrics over epochs during training.  
     I considered using some higher level library like pyorch lightning but I figured I would first get my hands "dirty" then move on to those kind of libraries.  
+
+17/05/2025:
+-   Realized that there was an error in the `Trainer.metrics_of_dataset` function.  
+    Turns out that it was actually expressing the accuracy as the mean of the sums of correct outputs per batch.  
+-   Switched from  conv+relu+fc+relu to conv+relu+batchNorm+fc+relut+softmax type of model.  
+    Switched from SGD (with momentum even if it's not written in the name) to Adam.
