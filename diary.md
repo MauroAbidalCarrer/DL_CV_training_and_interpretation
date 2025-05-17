@@ -12,3 +12,6 @@
     Turns out that it was actually expressing the accuracy as the mean of the sums of correct outputs per batch.  
 -   Switched from  conv+relu+fc+relu to conv+relu+batchNorm+fc+relut+softmax type of model.  
     Switched from SGD (with momentum even if it's not written in the name) to Adam.
+-   Came across this very [interesting notebook](https://www.kaggle.com/code/kmldas/cifar10-resnet-90-accuracy-less-than-5-min).  
+    I still need to (better) understand why/how the res net work for classification tho.  
+    
