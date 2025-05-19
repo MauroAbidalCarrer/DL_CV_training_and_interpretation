@@ -29,3 +29,12 @@
     I don't understand why the width/height and channel count respectively decrease and increase in between blocks instead of decrease by layer.  
     I asked chatGPT and it said that it's to preserve spatial information which sounds weird since the input will either zero or same padded...  
 -   Started to read the Network in Network (NiN) article of the Dive into deep learning and found out about the lazy 2d conv in pytorch.
+
+19/05/2025:
+-   Read the dive into deep learning article of resnet.  
+    Interstingly enough they say that the reason for the skip connection creation is not the vanishing/exploding gradient problem but rather non nested function groups.  
+    Meaning that bigger networks can't necessarily do what smaller networks can do.  
+    That sounds odd tbh.  
+    One of the comments points that out and a response says that this simply what the original paper says.  
+    I will try to read it tomorrow.  
+-   Abondend the ida of doing the leaffliction project, instead I will "simply" train a model on a (hopefully) big data set and then try to reimplement some interpretation paper.  
