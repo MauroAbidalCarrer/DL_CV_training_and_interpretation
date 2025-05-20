@@ -38,3 +38,14 @@
     One of the comments points that out and a response says that this simply what the original paper says.  
     I will try to read it tomorrow.  
 -   Abondend the ida of doing the leaffliction project, instead I will "simply" train a model on a (hopefully) big data set and then try to reimplement some interpretation paper.  
+
+20/05/2025:
+-   Read the paper on the resnet architecture.  
+    It was interesting.  
+    It does in fact, state that the probleme it tries to solve is the "degradation problem" and not the "vanishing/exploding gradients".  
+    The most interesting thing I learned is that not only does the resnet arcitecture allows for deeper models it also allows them to be a LOT thinner than VGG architecutre.  
+    In the paper, they use the resnet-34 (34 layers) and VGG-19(you can guess what the 19 means...).  
+    While the resnet-34 has more layers it takes 18% of the FLOPs that VGG-19 takes.  
+    that is mostly because the conv layers need a lot less channels.  
+    And also because there is only on fully connected layer at the end of resnet-35 against 3 of output size 4096 for VGG-19.  
+-   Ok, now I can finally start reimplementing the CIFAR10 90% in 5min kaggle notebook.  
