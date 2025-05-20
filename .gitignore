@@ -1,3 +1,6 @@
+# pytorch model weights... I think
+*.pth
+*/data/*
 data_augmentation.ipynb
 test.*
 leaves.zip
