@@ -62,3 +62,14 @@
     Which is odd since the notebook is called "CIFAR10 90% in 5 mins".  
     Now I actually hope that there is something wrong with my code.  
     If not, it means that I will have to pay for a better, more expensive, GPU.  
+    I fixed the kaggle notebook by replacing the code cell that downloaded CIFAR10 from fast.ai by a cell that downloads it using torchvision.datasets.CIFAR10.  
+    Then I ran it on kaggle using a P100 GPU.  
+    It trained the model in 2 mins(wtf?!!).  
+    I downloaded the notebook on the schools computer and addded it to the repos.  
+    I pull the notebook from the repos onto a vastai instance with a 4090.  
+    I runs faster than my reimplementation: 2 epochs in 13 minutes.  
+    But that's nothing compared to the 8 epochs in two minutes.  
+    So either I switch my workflow from vastai to kaggle OR I search for a simple opti trick.  
+    I looked for FFT 2D conv but I couldn't find an pytorch API reference for it.  
+    Also the forums seem to suggest that the benefits of using FFT for convolution emerge when using much larger filters amd inputs.  
+    So I might need to 
