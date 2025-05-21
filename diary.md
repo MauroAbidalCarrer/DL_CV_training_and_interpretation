@@ -74,3 +74,7 @@
     Also the forums seem to suggest that the benefits of using FFT for convolution emerge when using much larger filters amd inputs.  
     I ran the same notebook on a A100 vastai instance and the 8 epochs training took one minutes.  
     Damn...
+    I tested the notebook on a Tesla V100 and it ran in 1min16s but it costs 28¢/h instead of the ~1$/h for the A100.  
+    So I'll defenetly be using that going forward.  
+-   Tommorow I will try to understand why my trainer implementation is slower than the kaggle notebooks implementation.  
+    And Then I will have to add in all the other features like learning rate scheduling.  
