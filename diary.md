@@ -49,3 +49,16 @@
     that is mostly because the conv layers need a lot less channels.  
     And also because there is only on fully connected layer at the end of resnet-35 against 3 of output size 4096 for VGG-19.  
 -   Ok, now I can finally start reimplementing the CIFAR10 90% in 5min kaggle notebook.  
+
+
+21/05/2025:
+-   Read the web version of [DNNs always grok and here is why](https://imtiazhumayun.github.io/grokking/).  
+    It was very interesting, hopefully I can reimplement the Local complexity measure.  
+    Ideally I could use it as input for some sort of training policy.  
+-   I finished the first reimplementation of the kaggle notebook but the model is super slow.  
+    Then the remote machine crashed.  
+    So hopefully the issue comes from the machine and not the code.  
+    I ran the code on another machine and it still is super slow: one hour for two epochs...  
+    Which is odd since the notebook is called "CIFAR10 90% in 5 mins".  
+    Now I actually hope that there is something wrong with my code.  
+    If not, it means that I will have to pay for a better, more expensive, GPU.  
