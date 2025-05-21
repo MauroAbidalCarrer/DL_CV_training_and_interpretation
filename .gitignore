@@ -1,4 +1,5 @@
-# pytorch model weights... I think
+*/.vscode/*
+*/datasets/*
 *.pth
 */data/*
 data_augmentation.ipynb
