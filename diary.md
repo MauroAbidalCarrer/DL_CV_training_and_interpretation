@@ -72,4 +72,5 @@
     So either I switch my workflow from vastai to kaggle OR I search for a simple opti trick.  
     I looked for FFT 2D conv but I couldn't find an pytorch API reference for it.  
     Also the forums seem to suggest that the benefits of using FFT for convolution emerge when using much larger filters amd inputs.  
-    So I might need to 
+    I ran the same notebook on a A100 vastai instance and the 8 epochs training took one minutes.  
+    Damn...
