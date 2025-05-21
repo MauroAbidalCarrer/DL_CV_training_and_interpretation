@@ -3,7 +3,7 @@ from IPython.display import display
 from dataclasses import dataclass, field
 
 import torch
-from torch.optim import Adam
+from torch.optim import Optimizer
 from plotly.express import line
 from pandas import DataFrame as DF
 from torch.nn import Module, CrossEntropyLoss
@@ -14,8 +14,8 @@ from torch.utils.data import DataLoader as DL
 @dataclass
 class Trainer:
     model:Module
-    optimizer:Adam
-    fig: FigureWidget = field(default=None)
+    optimizer:Optimizer
+    fig: FigureWidget = field(default=None, init=False)
     step: int = field(default=0, init=False)
     epoch: int = field(default=0, init=False)
     loss:CrossEntropyLoss = field(default_factory=CrossEntropyLoss)
@@ -33,6 +33,7 @@ class Trainer:
         return DF.from_records(self.training_metrics)
 
     def _training_loop(self, epochs, train_dl:DL, test_dl:DL, plt_kwargs=None):
+        print(plt_kwargs)
         model_device = next(self.model.parameters()).device
         # Use self.epoch instead of for epoch in range(epochs).
         # This avoids resetting new metrics DF lines to the same epoch value in case this method gets recalled.
@@ -42,8 +43,8 @@ class Trainer:
             self.model.train()
             for batch_x, batch_y in train_dl:
                 self.optimizer.zero_grad()
-                batch_x = batch_x.to(model_device)
-                batch_y = batch_y.to(model_device)
+                batch_x = batch_x.to(model_device, non_blocking=True)
+                batch_y = batch_y.to(model_device, non_blocking=True)
                 outputs = self.model(batch_x)
                 loss_val = self.loss(outputs, batch_y)
                 loss_val.backward()
@@ -54,6 +55,7 @@ class Trainer:
 
     def record_and_display_metrics(self, train_dl: DL, test_dl: DL, plt_kwargs: dict):
         self.training_metrics.append(self.record_metrics(train_dl, test_dl))
+        print("recorded first metric")
         if plt_kwargs is not None:
             if self.fig is None:
                 self.create_figure_widget(plt_kwargs)
@@ -77,8 +79,8 @@ class Trainer:
         total_loss = 0
         total_accuracy = 0
         for batch_x, batch_y in data_loader:
-            batch_x = batch_x.to(model_device)
-            batch_y = batch_y.to(model_device)
+            batch_x = batch_x.to(model_device, non_blocking=True)
+            batch_y = batch_y.to(model_device, non_blocking=True)
             batch_y_pred = self.model(batch_x)
             total_loss += self.loss(batch_y_pred, batch_y).item()
             total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
@@ -90,6 +92,7 @@ class Trainer:
         }
 
     def create_figure_widget(self, plt_kwargs: dict) -> FigureWidget:
+        print("Created fig")
         df = (
             DF.from_records(self.training_metrics)
             .melt(plt_kwargs["x"], plt_kwargs["y"])
@@ -109,6 +112,7 @@ class Trainer:
         display(self.fig)
 
     def update_figure(self, plt_kwargs: dict):
+        print("updated fig")
         df = DF.from_records(self.training_metrics)
         with self.fig.batch_update():
             for i, plt_y in enumerate(plt_kwargs["y"]):
