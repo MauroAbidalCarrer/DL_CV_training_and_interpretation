@@ -87,3 +87,5 @@
     I tried the vastai cli and the vastai-ssh-config package I found online but I coulnd't make them work so gave up on that.  
 -   Now the "real" work of the day begins, I am going to try to find out why my code is slower than the original one.  
     Turns out the model was simply not on the GPU I just had forgot to add a .cuda() call to its declaration.  
+    Nevertheless, my training still runs two times slower than the original one (2m15s instead 1min15s).  
+    Even tho this is not a very big diff for me right now, it's worth investigating into it to learn from it now.  
