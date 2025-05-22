@@ -89,3 +89,10 @@
     Turns out the model was simply not on the GPU I just had forgot to add a .cuda() call to its declaration.  
     Nevertheless, my training still runs two times slower than the original one (2m15s instead 1min15s).  
     Even tho this is not a very big diff for me right now, it's worth investigating into it to learn from it now.  
+    It also turned out to be a simple reason: 
+    I would recompute the outputs of the model with `no_grad` on the training set where the kaggle notebook uses the outputs of the training loop.  
+    According to chatGPT, this is the conventional way of doing it.  
+    I set out to update the Trainer implementation... and it took me an embarassing amount of time(hours).  
+    I ended up with a convoluted solution, which I actually threw away for a simpler uglier solution but at least it works with minimal modifs.  
+    Now I can start adding the "fancy" features.  
+    Namely, lr scheduling, weight decay and gradient clipping.  
