@@ -33,8 +33,9 @@ class Trainer:
         return DF.from_records(self.training_metrics)
 
     def _training_loop(self, epochs, train_dl:DL, test_dl:DL, plt_kwargs=None):
-        print(plt_kwargs)
         model_device = next(self.model.parameters()).device
+        if model_device.type != "cuda":
+            print("Warning: Model is not on a cuda device.")
         # Use self.epoch instead of for epoch in range(epochs).
         # This avoids resetting new metrics DF lines to the same epoch value in case this method gets recalled.
         if self.epoch == 0:
@@ -55,7 +56,6 @@ class Trainer:
 
     def record_and_display_metrics(self, train_dl: DL, test_dl: DL, plt_kwargs: dict):
         self.training_metrics.append(self.record_metrics(train_dl, test_dl))
-        print("recorded first metric")
         if plt_kwargs is not None:
             if self.fig is None:
                 self.create_figure_widget(plt_kwargs)
@@ -92,7 +92,6 @@ class Trainer:
         }
 
     def create_figure_widget(self, plt_kwargs: dict) -> FigureWidget:
-        print("Created fig")
         df = (
             DF.from_records(self.training_metrics)
             .melt(plt_kwargs["x"], plt_kwargs["y"])
@@ -112,7 +111,6 @@ class Trainer:
         display(self.fig)
 
     def update_figure(self, plt_kwargs: dict):
-        print("updated fig")
         df = DF.from_records(self.training_metrics)
         with self.fig.batch_update():
             for i, plt_y in enumerate(plt_kwargs["y"]):
