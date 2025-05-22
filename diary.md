@@ -83,4 +83,7 @@
 -	I updated the setup_linux_machine repo to increase productivity.  
 	I added an aliases.zsh file that contains all the aliases I already had + `p` and `amp` git aliases.  
 	I might also use a repo I found that manages the .ssh/config file automatically.  
-	It looks like I will do anything to not work on the "main quest" of this repo lol.
+	It looks like I will do anything to not work on the "main quest" of this repo lol.  
+    I tried the vastai cli and the vastai-ssh-config package I found online but I coulnd't make them work so gave up on that.  
+-   Now the "real" work of the day begins, I am going to try to find out why my code is slower than the original one.  
+    Turns out the model was simply not on the GPU I just had forgot to add a .cuda() call to its declaration.  
