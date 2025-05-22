@@ -49,3 +49,50 @@
     that is mostly because the conv layers need a lot less channels.  
     And also because there is only on fully connected layer at the end of resnet-35 against 3 of output size 4096 for VGG-19.  
 -   Ok, now I can finally start reimplementing the CIFAR10 90% in 5min kaggle notebook.  
+
+
+21/05/2025:
+-   Read the web version of [DNNs always grok and here is why](https://imtiazhumayun.github.io/grokking/).  
+    It was very interesting, hopefully I can reimplement the Local complexity measure.  
+    Ideally I could use it as input for some sort of training policy.  
+-   I finished the first reimplementation of the kaggle notebook but the model is super slow.  
+    Then the remote machine crashed.  
+    So hopefully the issue comes from the machine and not the code.  
+    I ran the code on another machine and it still is super slow: one hour for two epochs...  
+    Which is odd since the notebook is called "CIFAR10 90% in 5 mins".  
+    Now I actually hope that there is something wrong with my code.  
+    If not, it means that I will have to pay for a better, more expensive, GPU.  
+    I fixed the kaggle notebook by replacing the code cell that downloaded CIFAR10 from fast.ai by a cell that downloads it using torchvision.datasets.CIFAR10.  
+    Then I ran it on kaggle using a P100 GPU.  
+    It trained the model in 2 mins(wtf?!!).  
+    I downloaded the notebook on the schools computer and addded it to the repos.  
+    I pull the notebook from the repos onto a vastai instance with a 4090.  
+    I runs faster than my reimplementation: 2 epochs in 13 minutes.  
+    But that's nothing compared to the 8 epochs in two minutes.  
+    So either I switch my workflow from vastai to kaggle OR I search for a simple opti trick.  
+    I looked for FFT 2D conv but I couldn't find an pytorch API reference for it.  
+    Also the forums seem to suggest that the benefits of using FFT for convolution emerge when using much larger filters amd inputs.  
+    I ran the same notebook on a A100 vastai instance and the 8 epochs training took one minutes.  
+    Damn...
+    I tested the notebook on a Tesla V100 and it ran in 1min16s but it costs 28¢/h instead of the ~1$/h for the A100.  
+    So I'll defenetly be using that going forward.  
+-   Tommorow I will try to understand why my trainer implementation is slower than the kaggle notebooks implementation.  
+    And Then I will have to add in all the other features like learning rate scheduling.  
+
+22/05/2025:
+-	I updated the setup_linux_machine repo to increase productivity.  
+	I added an aliases.zsh file that contains all the aliases I already had + `p` and `amp` git aliases.  
+	I might also use a repo I found that manages the .ssh/config file automatically.  
+	It looks like I will do anything to not work on the "main quest" of this repo lol.  
+    I tried the vastai cli and the vastai-ssh-config package I found online but I coulnd't make them work so gave up on that.  
+-   Now the "real" work of the day begins, I am going to try to find out why my code is slower than the original one.  
+    Turns out the model was simply not on the GPU I just had forgot to add a .cuda() call to its declaration.  
+    Nevertheless, my training still runs two times slower than the original one (2m15s instead 1min15s).  
+    Even tho this is not a very big diff for me right now, it's worth investigating into it to learn from it now.  
+    It also turned out to be a simple reason: 
+    I would recompute the outputs of the model with `no_grad` on the training set where the kaggle notebook uses the outputs of the training loop.  
+    According to chatGPT, this is the conventional way of doing it.  
+    I set out to update the Trainer implementation... and it took me an embarassing amount of time(hours).  
+    I ended up with a convoluted solution, which I actually threw away for a simpler uglier solution but at least it works with minimal modifs.  
+    Now I can start adding the "fancy" features.  
+    Namely, lr scheduling, weight decay and gradient clipping.  
