@@ -3,21 +3,24 @@ from IPython.display import display
 from dataclasses import dataclass, field
 
 import torch
-from torch.optim import Optimizer
 from plotly.express import line
+from torch.optim import Optimizer
 from pandas import DataFrame as DF
-from torch.nn import Module, CrossEntropyLoss
 from plotly.graph_objects import FigureWidget
 from torch.utils.data import DataLoader as DL
+from  torch.optim.lr_scheduler import LRScheduler
+from torch.nn import utils, Module, CrossEntropyLoss
 
 
 @dataclass
 class Trainer:
     model:Module
     optimizer:Optimizer
-    fig: FigureWidget = field(default=None, init=False)
     step: int = field(default=0, init=False)
     epoch: int = field(default=0, init=False)
+    lr_scheduler: LRScheduler = field(default=None)
+    grad_clip: float = field(default=0.0)
+    fig: FigureWidget = field(default=None, init=False)
     loss:CrossEntropyLoss = field(default_factory=CrossEntropyLoss)
     training_metrics:list[dict] = field(default_factory=list, init=False)
 
@@ -51,9 +54,13 @@ class Trainer:
                 batch_y_pred = self.model(batch_x)
                 loss_value = self.loss(batch_y_pred, batch_y)
                 loss_value.backward()
+                if self.grad_clip:
+                    utils.clip_grad_value_(self.model.parameters(), self.grad_clip)
                 total_loss += loss_value.item()
                 total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
                 self.optimizer.step()
+                if self.lr_scheduler:
+                    self.lr_scheduler.step()
                 self.step += 1
             self.epoch += 1
             train_metrics = {
