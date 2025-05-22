@@ -78,3 +78,9 @@
     So I'll defenetly be using that going forward.  
 -   Tommorow I will try to understand why my trainer implementation is slower than the kaggle notebooks implementation.  
     And Then I will have to add in all the other features like learning rate scheduling.  
+
+22/05/2025:
+-	I updated the setup_linux_machine repo to increase productivity.  
+	I added an aliases.zsh file that contains all the aliases I already had + `p` and `amp` git aliases.  
+	I might also use a repo I found that manages the .ssh/config file automatically.  
+	It looks like I will do anything to not work on the "main quest" of this repo lol.
