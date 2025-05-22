@@ -42,17 +42,25 @@ class Trainer:
             self.record_and_display_metrics(train_dl, test_dl, plt_kwargs)
         for _ in range(epochs):
             self.model.train()
+            total_loss = 0
+            total_accuracy = 0
             for batch_x, batch_y in train_dl:
                 self.optimizer.zero_grad()
                 batch_x = batch_x.to(model_device, non_blocking=True)
                 batch_y = batch_y.to(model_device, non_blocking=True)
-                outputs = self.model(batch_x)
-                loss_val = self.loss(outputs, batch_y)
-                loss_val.backward()
+                batch_y_pred = self.model(batch_x)
+                loss_value = self.loss(batch_y_pred, batch_y)
+                loss_value.backward()
+                total_loss += loss_value.item()
+                total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
                 self.optimizer.step()
                 self.step += 1
             self.epoch += 1
-            self.record_and_display_metrics(train_dl, test_dl, plt_kwargs)
+            train_metrics = {
+                "train_loss": total_loss / len(train_dl),
+                "train_accuracy": total_accuracy / len(train_dl.dataset)
+            }
+            self.record_and_display_metrics(train_metrics, test_dl, plt_kwargs)
 
     def record_and_display_metrics(self, train_dl: DL, test_dl: DL, plt_kwargs: dict):
         self.training_metrics.append(self.record_metrics(train_dl, test_dl))
@@ -61,16 +69,20 @@ class Trainer:
                 self.create_figure_widget(plt_kwargs)
             self.update_figure(plt_kwargs)
 
-    def record_metrics(self, train_dl: DL, test_dl: DL) -> dict[str, any]:
-        with torch.no_grad():
-            return {
-                "epoch": self.epoch,
-                "step": self.step,
-                "date": datetime.now(),
-                **self.metrics_of_dataset(test_dl, "test"),
-                **self.metrics_of_dataset(train_dl, "train"),
-                **self.optimizer.state_dict()["param_groups"][-1],
-            }
+    def record_metrics(self, train_dl: DL|dict, test_dl: DL) -> dict[str, any]:
+        # This is ugly but it does the trick
+        if isinstance(train_dl, DL):
+            train_metrics = self.metrics_of_dataset(train_dl, "train")
+        else: 
+            train_metrics = train_dl
+        return {
+            "epoch": self.epoch,
+            "step": self.step,
+            "date": datetime.now(),
+            **self.metrics_of_dataset(test_dl, "test"),
+            **train_metrics,
+            **self.optimizer.state_dict()["param_groups"][-1],
+        }
 
     @torch.no_grad()
     def metrics_of_dataset(self, data_loader: DL, dl_prefix: str) -> dict:
