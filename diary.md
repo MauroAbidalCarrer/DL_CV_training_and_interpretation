@@ -96,3 +96,56 @@
     I ended up with a convoluted solution, which I actually threw away for a simpler uglier solution but at least it works with minimal modifs.  
     Now I can start adding the "fancy" features.  
     Namely, lr scheduling, weight decay and gradient clipping.  
+    Done.
+
+23/05/2025:
+-   I read this [toturial/explanation web page](https://sgugger.github.io/how-do-you-find-a-good-learning-rate.html) on how to find the right learning rate.  
+    Very intereseting.
+    KTs:
+    - To find the learnging rate:
+        - Start training with a small learning rate.
+        - At each iteration, register the smoothed exponentially weighed averaged loss and muiltiply it by some hyper parameter for the next iteration.
+        - The loss will decrease then increase.
+        - Once it increases to four fold that of the minimum registed loss stop the "learning rate search"(that expression comes from me).
+        - The web page states that the learnig rate with the lowest loss divided by 10 should be taken.  
+          The reason for taking a learning rate smaller than the one with the lowest loss instead of taking the later is because of the exponentially weighed averaging: it makes the loss rise later.  
+          I thought it was kinda weird to take the learning rate with the lowest loss since it is preceeded by other training steps that have already deacreased the loss in the previous iterations.  
+          I asked why not train the model from start for each learning rate to chatGPT.  
+          It said that while it would be accurate, it would be a lot more compute intensive and that searching for the learning rate in a single training run is good enough.  
+          It also said that sometimes the learning rate with the highest loss difference (compared to the previous iteration) is chosen.  
+          That makes a lot more sense.  
+-   Then I read this [toturial/explanation web page](https://sgugger.github.io/the-1cycle-policy.html#the-1cycle-policy) of the same author on one cycle policy.  
+    This is a learning rate scheduler.  
+    In fact this is the page I wanted to read in the first place. However it was refering to the previous page which looked important.  
+    I didn't learn THAT much mostly because there wasn't much content on the page.  
+    KTs:
+    - The scheduling is comprised of three parts:
+        - A linear ascent of the learning rate from a low value (usually 10x lower that the value found by the lr finder) to the "normal" value, the one find by the learning rate finder.    
+          This is know as the warm-up phase and this is what allows us to take a higher learning rate than if we didn't go through this warm up phase.   
+          The ascent takes ~half ot the training.  
+        - A slightly shorter long linear descent from the found learning rate back to the low value.
+        - Yet another linear, very short descent to ~100x less than the starting value (so ~1000x less that the one found by the LR finder).  
+    I don't really understand what the warm up is so I will have to into that another day.  
+-   I read a reddit blog post that asked why the learning rate was used and why some papers say that it is usefull while others say that it is not.  
+    The only response that seemed to make sense is that it prevents the Adam optimizer from accumulating early mostly random gradients in its momentum.  
+
+
+25/05/2025:
+-   I watched this [video] (https://www.youtube.com/watch?v=KOKvSQQJYy4&ab_channel=Tunadorable) on the warmup of learning rate.  
+    KTs:
+    - New terms:
+        - loss sharpness: How much the learning rate changes for a given change in parameters.
+        - trainging/loss catapults: The oscillations of the loss during training.
+    - There are two reasons for the success of learning rate: 
+        1.  The one discussed in the reddit post, it prevents Adam from accumulating noisy initial gradients in its momentum.  
+        1.  The loss landscape is at first very sharp.  
+            -   If we use a normal decaying learning rate policy/schedule we will essentially find the closest crevasse in the landscape.  
+                This is not ideal since crevasses in sharp landscapes are usually overfit regions.
+            -   If we first warmup the learning rate, the model will escape this sharp region and arrive at a flatter region.  
+                This is great for two reasons:
+                -   Flat regions are usually regions of generalization.
+                -   They allow us to use higher learning rate.
+        > Warning: I passed the "sharp to flat LR warm up theory" to chatGPT to confirm and it denied it once out of three times...
+    - The warmup is not always necessary since the loss landscape is not always sharp it's mostly used on large models or for trainings with large batch sizes.  
+    KT from chatGPT:  
+    - The warm-up also helps the batch/layernorm layers to initialize their parameters similarly to the way warm up helps to initialize the momentum of Adam.  
