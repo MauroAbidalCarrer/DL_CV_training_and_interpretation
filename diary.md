@@ -149,3 +149,7 @@
     - The warmup is not always necessary since the loss landscape is not always sharp it's mostly used on large models or for trainings with large batch sizes.  
     KT from chatGPT:  
     - The warm-up also helps the batch/layernorm layers to initialize their parameters similarly to the way warm up helps to initialize the momentum of Adam.  
+-   With all of that out of the way, I can start looking into the interpretation papers/blog posts.  
+-   I started reading the [Deep Networks Always Grok and Here is Why](https://arxiv.org/pdf/2402.15555) paper.  
+    It's pretty verbose in it's introduction.  
+    I just got started, but I learned a few new mathematical terms.
