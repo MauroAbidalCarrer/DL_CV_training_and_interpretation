@@ -153,3 +153,17 @@
 -   I started reading the [Deep Networks Always Grok and Here is Why](https://arxiv.org/pdf/2402.15555) paper.  
     It's pretty verbose in it's introduction.  
     I just got started, but I learned a few new mathematical terms.
+
+26/05/2025:
+-   I finished reading the paper.  
+    KTs:
+    -   Terms:
+        -   Delayed generalization: aka Grokking  
+        -   Adversirial robustness: Output resistance/invariance to perturbations in the input.  
+        -   Delayed robustness: Grokkiong/generalization on adversarial samples (so this seems like Gorkking premium basically)  
+        -   Piecewise function: A function that is partitioned into several intervals on which the function may be defined differently.
+        -   circuit: A subgraph of the network(a combination of activated neurons) (This actually comes from another paper but it's reused here.).  
+            Such circuit can be simplified, when using a continuous piecewise linear activation functions sucha as relu, to a single affine transformation.  
+        -   Partition/region: Shape in the input space of a circuit.  
+        -   Local Complexity: A measure of the number of different output partition/regions/splines in neighborhood in the input.  
+            I will explain it more clearly later.  
