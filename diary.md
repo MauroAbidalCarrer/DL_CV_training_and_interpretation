@@ -167,3 +167,33 @@
         -   Partition/region: Shape in the input space of a circuit.  
         -   Local Complexity: A measure of the number of different output partition/regions/splines in neighborhood in the input.  
             I will explain it more clearly later.  
+        -   circular Matrix: A square matrix in which all rows are composed of the same elements.  
+            Each row is rotated one element to the right relative to the preceding row.
+        -   Training interpolation: Point at which the model as reached very low training error/loss (usually when it has overfitted?).  
+    -   All DNNs architectures are a form of MLP, that is true for CNNs and Transformers.     
+        I assume it's also true for other less well known architectures but this doesn't really matter anyway.    
+        In fact, a conv layer is a specifc case of a simble linear layer, it's a circular Matrix.  
+    -   All DNNs are continuous piecewise linear functions/continuous piecewise affine splines.  
+        Yes, the paper uses different expressions for (what seems to be) the same thing.  
+    -   The density of these pieces/partition/regions in a subregion of the input space can be expressed as local complexity(LC).  
+        The LC of a point (like a training/test/validation sample) expresses:
+        -   how many regions there are close to it
+        -   how "non linear" the output is in that input region (ssuming that the regions have diffrent linear functions).  
+        -   how complex the output is in that input region
+        It is presented as a new progress measure on an equal foot with loss, accuracy ect.
+        To measure the LC of a layer in the neighbood of a point:
+        1.  P points are projected on a sphere of radius r centerd on the point.
+            This composes a cross-polytopal.  
+        1.  We pass the points/vertices through the linear layer.  
+        1.  Vertices from differnt sides of the neurons hyperplanes will have different signs.  
+        1.  Vertices with different signs than the one they are connected to by edges of the cross-polytopal increase the LC measure.  
+        1.  Then we pass the points through the layers up to the next linear layer.   
+        1.  Repeat until we reach the end of the model.  
+            I believe that the originally convex Polytope will potentially loose over time its convexity.  
+        It's still unclear to me tho by exactly how much does the LC increases by sign changes.  
+    -   The training or test LC is the LC of the training and testing points respectively.  
+        When they increase, it means that the number of linear regions/complexity/non-linearity around their respective points increases.
+        Simillarly, when they decrease, it means that the number of linear regions/complexity/non-linearity around their respective points decreases.
+    -   During training the training LC follows this dynamic: 
+        1.  A descent, this one "is subject to the network parameterization as well as initialization"(extraact from the paper) and may not always occur.  
+        1.  
