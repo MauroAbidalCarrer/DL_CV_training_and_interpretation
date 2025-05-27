@@ -196,4 +196,33 @@
         Simillarly, when they decrease, it means that the number of linear regions/complexity/non-linearity around their respective points decreases.
     -   During training the training LC follows this dynamic: 
         1.  A descent, this one "is subject to the network parameterization as well as initialization"(extraact from the paper) and may not always occur.  
-        1.  
+        1.  An ubiquitous(always happens) ascent that lasts until trainging interpolation.  
+            ```
+            The training LC may be higher for training points than for test points.
+            Indicating an accumulation of non-linearities around training data compared to test data.
+            ```
+            Sligthly modified extract from the paper.
+        1.  A second (if there was a first) descent of training AND test points.  
+            The linear regions migrate away from training points, this is kinda obvious since training LC decreases.  
+            During this phase, the authors have discovered  a less obvious phenomenom through spline cam:  
+            `The regions tend to migrate away from the training+testing points and toward the decision boundry.`  
+            **This is when the grokking happens.**  
+            Interstingly enough, this happens before generalization can be recognized through train/test loss/accuracy.  
+    -   According to section four here is how grokking is affected to hyperparameters:
+        -   Parameterization(number of parameters): 
+            Increasing parametrization whether through widdening or deepning,
+            "hastens region migration, therefore makes grokking happen earlier".
+        -   Weight decay: 
+            ```
+            Weight decay does not seem to have a monotonic behavior as it can (added the can for clarity) both
+            delays and hastens region migration, based on the amount of weight decay.
+            ```
+        -   Batch Normalization: Always blocks grokking (I tried reading the Appendix to understand why but I got lazy).
+        -   Activation functions: Was only tested on Relu And Gelu and both lead to grokking.  
+        -   Dataset size: 
+            Scalling good generizable training data hastens grokking.  
+            On the other hand, scalling training set tha contains data that needs to be morized, slows down grokking.  
+            This is demostrated in the paper by training an MLP on MNIST and randomizing a defined fraction of the training sample labels.  
+    -   The paper also makes a connection between spline and circuits theory:  
+        -   Each partition is a circuit.  
+        -   Moving from one adjacent partition to the other corresponds to turning on or off a single neuron.  
