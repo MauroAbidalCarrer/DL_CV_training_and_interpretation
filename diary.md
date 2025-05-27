@@ -226,3 +226,6 @@
     -   The paper also makes a connection between spline and circuits theory:  
         -   Each partition is a circuit.  
         -   Moving from one adjacent partition to the other corresponds to turning on or off a single neuron.  
+
+27/05/2025:
+-   Now I will try to use first the [spline cam code](https://github.com/AhmedImtiazPrio/splinecam) and then the [local complexity code](https://github.com/AhmedImtiazPrio/grok-adversarial/).  
