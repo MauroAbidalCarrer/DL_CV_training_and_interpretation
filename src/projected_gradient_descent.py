@@ -17,8 +17,9 @@ class PGD:
 
     def forward(self, inputs: Tensor, labels: Tensor) -> Tensor:
         adv_inputs = inputs.clone(detach=True)
-        input_min = min(inputs[1:])[1] if self.input_min is None else self.input_min
-        input_max = max(inputs[1:])[1] if self.input_max is None else self.input_max
+        # If not specified, take the 
+        input_min = inputs.min() if self.input_min is None else self.input_min
+        input_max = inputs.max() if self.input_max is None else self.input_max
         # Iteratively compute the adversarial inputs
         for _ in range(self.iters):
             # Compute the loss gradients w.r.t adversarial inputs
