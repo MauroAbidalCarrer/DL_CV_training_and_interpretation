@@ -1,4 +1,4 @@
-name: leaf
+name: DL_CV_inter
 channels:
   - nvidia
   - pytorch
