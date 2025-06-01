@@ -6,8 +6,8 @@ import torch
 from plotly.express import line
 from torch.optim import Optimizer
 from pandas import DataFrame as DF
-from plotly.graph_objects import FigureWidget
 from torch.utils.data import DataLoader as DL
+from plotly.graph_objects import FigureWidget
 from  torch.optim.lr_scheduler import LRScheduler
 from torch.nn import utils, Module, CrossEntropyLoss
 
