@@ -49,8 +49,6 @@ class Trainer:
             total_accuracy = 0
             for batch_x, batch_y in train_dl:
                 self.optimizer.zero_grad()
-                batch_x = batch_x.to(model_device, non_blocking=True)
-                batch_y = batch_y.to(model_device, non_blocking=True)
                 batch_y_pred = self.model(batch_x)
                 loss_value = self.loss(batch_y_pred, batch_y)
                 loss_value.backward()
@@ -98,8 +96,6 @@ class Trainer:
         total_loss = 0
         total_accuracy = 0
         for batch_x, batch_y in data_loader:
-            batch_x = batch_x.to(model_device, non_blocking=True)
-            batch_y = batch_y.to(model_device, non_blocking=True)
             batch_y_pred = self.model(batch_x)
             total_loss += self.loss(batch_y_pred, batch_y).item()
             total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()

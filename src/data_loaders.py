@@ -11,11 +11,11 @@ class DeviceDataLoader(DataLoader):
         self,
         dataset: Dataset,
         batch_size: int,
-        shuffle: bool,
         device: dev,
         # store_on_dev: bool,
+        **kwargs,
         ):
-        super().__init__(dataset, batch_size, shuffle)
+        super().__init__(dataset, batch_size, **kwargs)
         self.device = device
 
     def __iter__(self):
