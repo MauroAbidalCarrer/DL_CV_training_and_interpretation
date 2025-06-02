@@ -5,7 +5,7 @@ from torch import Tensor, no_grad, min, max, clamp
 
 
 @dataclass
-class PGD:
+class ProjectedGradientDescent:
     iters: int
     alpha: float
     loss: Module
@@ -15,7 +15,7 @@ class PGD:
     input_max: Tensor|float = field(default=None)
 
 
-    def forward(self, inputs: Tensor, labels: Tensor) -> Tensor:
+    def generate_attacks(self, inputs: Tensor, labels: Tensor) -> Tensor:
         adv_inputs = inputs.clone().detach()
         # If not specified, take the 
         input_min = inputs.min() if self.input_min is None else self.input_min
