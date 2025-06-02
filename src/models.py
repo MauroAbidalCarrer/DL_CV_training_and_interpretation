@@ -5,10 +5,20 @@ from torch import nn
 from torch import Tensor
 
 
+def conv_block(in_channels: int, out_channels: int, pool=False) -> nn.Module:
+    layers = [
+        nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1), 
+        nn.BatchNorm2d(out_channels), 
+        nn.ReLU(inplace=True),
+    ]
+    if pool: 
+        layers.append(nn.MaxPool2d(2))
+    return nn.Sequential(*layers)
+
 class ResNet9(nn.Module):
     def __init__(self, in_channels: int, num_classes: int):
         super().__init__()
-        self.name = "ResNet9_" + datetime.now().date()
+        self.name = "ResNet9_" + str(datetime.now().date())
         self.conv1 = conv_block(in_channels, 64)
         self.conv2 = conv_block(64, 128, pool=True)
         self.res1 = nn.Sequential(conv_block(128, 128), conv_block(128, 128))
@@ -33,13 +43,3 @@ class ResNet9(nn.Module):
         out = self.res2(out) + out
         out = self.classifier(out)
         return out
-
-def conv_block(in_channels: int, out_channels: int, pool=False) -> nn.Module:
-    layers = [
-        nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1), 
-        nn.BatchNorm2d(out_channels), 
-        nn.ReLU(inplace=True),
-    ]
-    if pool: 
-        layers.append(nn.MaxPool2d(2))
-    return nn.Sequential(*layers)
