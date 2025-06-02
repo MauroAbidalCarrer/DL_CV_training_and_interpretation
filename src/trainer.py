@@ -42,12 +42,14 @@ class Trainer:
         # Use self.epoch instead of for epoch in range(epochs).
         # This avoids resetting new metrics DF lines to the same epoch value in case this method gets recalled.
         if self.epoch == 0:
+            print("first record")
             self.record_and_display_metrics(train_dl, test_dl, plt_kwargs)
         for _ in range(epochs):
-            self.model.train()
+            print("epoch", self.epoch)
             total_loss = 0
             total_accuracy = 0
             for batch_x, batch_y in train_dl:
+                self.model.train()
                 self.optimizer.zero_grad()
                 batch_y_pred = self.model(batch_x)
                 loss_value = self.loss(batch_y_pred, batch_y)
