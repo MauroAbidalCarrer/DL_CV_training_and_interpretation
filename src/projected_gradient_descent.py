@@ -16,7 +16,7 @@ class PGD:
 
 
     def forward(self, inputs: Tensor, labels: Tensor) -> Tensor:
-        adv_inputs = inputs.clone(detach=True)
+        adv_inputs = inputs.clone().detach()
         # If not specified, take the 
         input_min = inputs.min() if self.input_min is None else self.input_min
         input_max = inputs.max() if self.input_max is None else self.input_max
