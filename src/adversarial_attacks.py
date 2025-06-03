@@ -17,9 +17,7 @@ class ProjectedGradientDescent:
 
     def generate_attacks(self, inputs: Tensor, labels: Tensor) -> Tensor:
         original_model_training_state = self.model.training
-        print("original_model_training_state:", original_model_training_state)
         self.model.eval()
-        print("creating adv attacks")
         adv_inputs = inputs.clone().detach()
         # If not specified, take the min and max of the batch instead of the entire dataset
         input_min = inputs.min() if self.input_min is None else self.input_min
