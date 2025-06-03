@@ -6,8 +6,8 @@ import torch
 from plotly.express import line
 from torch.optim import Optimizer
 from pandas import DataFrame as DF
-from plotly.graph_objects import FigureWidget
 from torch.utils.data import DataLoader as DL
+from plotly.graph_objects import FigureWidget
 from  torch.optim.lr_scheduler import LRScheduler
 from torch.nn import utils, Module, CrossEntropyLoss
 
@@ -44,13 +44,17 @@ class Trainer:
         if self.epoch == 0:
             self.record_and_display_metrics(train_dl, test_dl, plt_kwargs)
         for _ in range(epochs):
-            self.model.train()
             total_loss = 0
             total_accuracy = 0
+            # Count nb samples instead of accessing len(data_loader.dataset)
+            # in case the data lauder augments the number of samples
+            nb_batches = 0
+            nb_samples = 0
             for batch_x, batch_y in train_dl:
+                nb_batches += 1
+                nb_samples += len(batch_x)
+                self.model.train()
                 self.optimizer.zero_grad()
-                batch_x = batch_x.to(model_device, non_blocking=True)
-                batch_y = batch_y.to(model_device, non_blocking=True)
                 batch_y_pred = self.model(batch_x)
                 loss_value = self.loss(batch_y_pred, batch_y)
                 loss_value.backward()
@@ -65,7 +69,7 @@ class Trainer:
             self.epoch += 1
             train_metrics = {
                 "train_loss": total_loss / len(train_dl),
-                "train_accuracy": total_accuracy / len(train_dl.dataset)
+                "train_accuracy": total_accuracy / nb_samples
             }
             self.record_and_display_metrics(train_metrics, test_dl, plt_kwargs)
 
@@ -91,23 +95,27 @@ class Trainer:
             **self.optimizer.state_dict()["param_groups"][-1],
         }
 
-    @torch.no_grad()
     def metrics_of_dataset(self, data_loader: DL, dl_prefix: str) -> dict:
         self.model.eval()
         model_device = next(self.model.parameters()).device
         total_loss = 0
         total_accuracy = 0
+        # Count nb samples instead of accessing len(data_loader.dataset)
+        # in case the data lauder augments the number of samples
+        nb_batches = 0
+        nb_samples = 0
         for batch_x, batch_y in data_loader:
-            batch_x = batch_x.to(model_device, non_blocking=True)
-            batch_y = batch_y.to(model_device, non_blocking=True)
-            batch_y_pred = self.model(batch_x)
-            total_loss += self.loss(batch_y_pred, batch_y).item()
-            total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
+            nb_batches += 1
+            with torch.no_grad():
+                batch_y_pred = self.model(batch_x)
+                total_loss += self.loss(batch_y_pred, batch_y).item()
+                total_accuracy += (torch.max(batch_y_pred, 1)[1] == batch_y).sum().item()
+            nb_samples += len(batch_x)
         return {
             # Divide loss by nb batches
             dl_prefix + "_loss": total_loss / len(data_loader),
             # Divide accuracy by nb elements
-            dl_prefix + "_accuracy": total_accuracy / len(data_loader.dataset),
+            dl_prefix + "_accuracy": total_accuracy / nb_samples,
         }
 
     def create_figure_widget(self, plt_kwargs: dict) -> FigureWidget:
