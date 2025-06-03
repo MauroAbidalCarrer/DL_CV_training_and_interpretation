@@ -95,7 +95,6 @@ class Trainer:
             **self.optimizer.state_dict()["param_groups"][-1],
         }
 
-    # @torch.no_grad()
     def metrics_of_dataset(self, data_loader: DL, dl_prefix: str) -> dict:
         self.model.eval()
         model_device = next(self.model.parameters()).device
